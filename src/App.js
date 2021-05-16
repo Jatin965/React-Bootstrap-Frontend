@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Shipping from "./pages/Shipping";
 import Payment from "./pages/Payment";
 import PlaceOrder from "./pages/PlaceOrder";
+import Orders from "./pages/Orders";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
 
           <Route path="/place-order">
             <PlaceOrder />
+          </Route>
+
+          <Route path="/order/:id">
+            <Orders />
           </Route>
 
           <Route path="/product/:productId">

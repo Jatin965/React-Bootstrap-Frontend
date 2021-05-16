@@ -23,9 +23,9 @@ const Header = (props) => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
-              <LinkContainer to="/login">
-                <Nav.Link>
-                  <i className="fas fa-user"></i> Login
+              <LinkContainer to="/cart">
+                <Nav.Link href="/cart">
+                  <i className="fas fa-shopping-cart"></i> Cart
                 </Nav.Link>
               </LinkContainer>
 
@@ -40,9 +40,9 @@ const Header = (props) => {
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <LinkContainer to="/cart">
-                  <Nav.Link href="/cart">
-                    <i className="fas fa-shopping-cart"></i> Cart
+                <LinkContainer to="/login">
+                  <Nav.Link>
+                    <i className="fas fa-user"></i> Login
                   </Nav.Link>
                 </LinkContainer>
               )}
