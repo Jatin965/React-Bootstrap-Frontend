@@ -8,6 +8,11 @@ import HomePage from "./pages/HomePage";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Shipping from "./pages/Shipping";
+import Payment from "./pages/Payment";
+import PlaceOrder from "./pages/PlaceOrder";
 
 function App() {
   return (
@@ -18,12 +23,35 @@ function App() {
           <Route path="/" exact>
             <HomePage />
           </Route>
+
           <Route path="/login">
             <Login />
           </Route>
+
+          <Route path="/register">
+            <Register />
+          </Route>
+
+          <Route path="/profile">
+            <Profile />
+          </Route>
+
+          <Route path="/shipping">
+            <Shipping />
+          </Route>
+
+          <Route path="/payment">
+            <Payment />
+          </Route>
+
+          <Route path="/place-order">
+            <PlaceOrder />
+          </Route>
+
           <Route path="/product/:productId">
             <ProductDetail />
           </Route>
+
           <Route path="/cart/:productId?">
             <Cart />
           </Route>
