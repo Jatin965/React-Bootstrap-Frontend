@@ -1,20 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getOrderDetails } from "../actions/orderActions";
+import {
+  getOrderDetails,
+  payOrder,
+  deliverOrder,
+} from "../actions/orderActions";
+
+import { PayPalButton } from "react-paypal-button-v2";
+import {
+  ORDER_PAY_RESET,
+  ORDER_DELIVER_RESET,
+} from "../constants/orderConstants";
 
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
 const Orders = () => {
   const match = useRouteMatch();
+  const history = useHistory();
   const dispatch = useDispatch();
+
+  const [sdkReady, setSdkReady] = useState(false);
+
+  // AZXnRwPnQg5BQF93EIJjzg6M2Uh-5OxfiNl4rGAS8JftscFS-R2ZcZeiqT4zFCZpVk8WFi7buUu6BR4-
 
   const orderId = match.params.id;
 
   const { order, error, loading } = useSelector((state) => state.orderDetails);
+
+  const { userInfo } = useSelector((state) => state.userLogin);
+
+  const { loading: loadingPay, success: successPay } = useSelector(
+    (state) => state.orderPay
+  );
+
+  const { loading: loadingDeliver, success: successDeliver } = useSelector(
+    (state) => state.orderDeliver
+  );
 
   if (!loading && !error) {
     order.itemsPrice = order.orderItems
@@ -22,11 +47,50 @@ const Orders = () => {
       .toFixed(2);
   }
 
+  const addPayPalScript = () => {
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src =
+      "https://www.paypal.com/sdk/js?client-id=AZXnRwPnQg5BQF93EIJjzg6M2Uh-5OxfiNl4rGAS8JftscFS-R2ZcZeiqT4zFCZpVk8WFi7buUu6BR4-";
+    script.async = true;
+    script.onload = () => {
+      setSdkReady(true);
+    };
+    document.body.appendChild(script);
+  };
+
   useEffect(() => {
-    if (!order || order._id !== Number(orderId)) {
-      dispatch(getOrderDetails(orderId));
+    if (!userInfo) {
+      history.push("/login");
     }
-  }, [order, orderId]);
+
+    if (
+      !order ||
+      successPay ||
+      order._id !== Number(orderId) ||
+      successDeliver
+    ) {
+      dispatch({ type: ORDER_PAY_RESET });
+
+      dispatch({ type: ORDER_DELIVER_RESET });
+
+      dispatch(getOrderDetails(orderId));
+    } else if (!order.isPaid) {
+      if (!window.paypal) {
+        addPayPalScript();
+      } else {
+        setSdkReady(true);
+      }
+    }
+  }, [dispatch, order, orderId, successPay, successDeliver]);
+
+  const successPaymentHandler = (paymentResult) => {
+    dispatch(payOrder(orderId, paymentResult));
+  };
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order));
+  };
 
   if (loading) {
     return <Loader />;
@@ -158,7 +222,37 @@ const Orders = () => {
                   <Col>${order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
+
+              {!order.isPaid && (
+                <ListGroup.Item>
+                  {loadingPay && <Loader />}
+
+                  {!sdkReady ? (
+                    <Loader />
+                  ) : (
+                    <PayPalButton
+                      amount={order.totalPrice}
+                      onSuccess={successPaymentHandler}
+                    />
+                  )}
+                </ListGroup.Item>
+              )}
             </ListGroup>
+            {loadingDeliver && <Loader />}
+            {userInfo &&
+              userInfo.isAdmin &&
+              order.isPaid &&
+              !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button
+                    type="button"
+                    className="btn btn-block"
+                    onClick={deliverHandler}
+                  >
+                    Mark As Delivered
+                  </Button>
+                </ListGroup.Item>
+              )}
           </Card>
         </Col>
       </Row>

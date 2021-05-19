@@ -14,6 +14,11 @@ import Shipping from "./pages/Shipping";
 import Payment from "./pages/Payment";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
+import UserList from "./pages/UserList";
+import UserEdit from "./pages/UserEdit";
+import ProductList from "./pages/ProductList";
+import ProductEdit from "./pages/ProductEdit";
+import OrderList from "./pages/OrderList";
 
 function App() {
   return (
@@ -59,6 +64,26 @@ function App() {
 
           <Route path="/cart/:productId?">
             <Cart />
+          </Route>
+
+          <Route path="/admin/user-list">
+            <UserList />
+          </Route>
+
+          <Route path="/admin/user/:id/edit">
+            <UserEdit />
+          </Route>
+
+          <Route path="/admin/product-list">
+            <ProductList />
+          </Route>
+
+          <Route path="/admin/product/:id/edit">
+            <ProductEdit />
+          </Route>
+
+          <Route path="/admin/order-list">
+            <OrderList />
           </Route>
         </Container>
       </main>
